@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault(); // Prevent the form from being submitted normally
 
         const currentData = data[currentQuestionIndex];
+        const formData = new FormData(form);
 
         if (currentData.type === 'rating') {
             const meaningfulness = document.getElementById('meaningfulness').value;
@@ -42,24 +43,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const consistency = document.getElementById('consistency').value;
 
             // Submit rating data to Google Forms
-            console.log({
-                type: 'rating',
-                comment: currentData.comment,
-                method: currentData.method,
-                ratings: { meaningfulness, naturalness, consistency }
+            const queryParams = new URLSearchParams({
+                'entry.504190672': 'YES',
+                'entry.1246742046': 'YES',
+                'entry.790380436': meaningfulness,
+                'entry.240260106': naturalness,
+                'entry.1991584273': consistency
             });
+
+            submitToGoogleForms(queryParams.toString());
         } else if (currentData.type === 'comparison') {
             const preferredComment = document.getElementById('preferred-comment').value;
             const reason = document.getElementById('reason').value;
 
             // Submit comparison data to Google Forms
-            console.log({
-                type: 'comparison',
-                method_id: currentData.method_id,
-                method: currentData.method,
-                preferredComment,
-                reason
+            const queryParams = new URLSearchParams({
+                'entry.650268919': preferredComment,
+                'entry.812987669': 'YES',
+                'entry.1520462176': reason
             });
+
+            submitToGoogleForms(queryParams.toString());
         }
 
         // Move to the next question
@@ -70,6 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Thank you for your participation!');
         }
     });
+
+    function submitToGoogleForms(queryParams) {
+        const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLScHj1FaA0RpWx18pVgQoUyHh7NQzhEE0DrNI2PO4PVPg2V21g/formResponse?${queryParams}`;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', formUrl, true);
+        xhr.send();
+    }
 
     loadQuestion();
 });
