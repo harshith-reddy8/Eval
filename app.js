@@ -43,27 +43,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const consistency = document.getElementById('consistency').value;
 
             // Submit rating data to Google Forms
-            const queryParams = new URLSearchParams({
-                'entry.504190672': 'YES',
-                'entry.1246742046': 'YES',
-                'entry.790380436': meaningfulness,
-                'entry.240260106': naturalness,
-                'entry.1991584273': consistency
-            });
+            const params = new URLSearchParams();
+            params.append('entry.504190672', 'YES');
+            params.append('entry.1246742046', 'YES');
+            params.append('entry.790380436', meaningfulness);
+            params.append('entry.240260106', naturalness);
+            params.append('entry.1991584273', consistency);
 
-            submitToGoogleForms(queryParams.toString());
+            submitToGoogleForms(params);
         } else if (currentData.type === 'comparison') {
             const preferredComment = document.getElementById('preferred-comment').value;
             const reason = document.getElementById('reason').value;
 
             // Submit comparison data to Google Forms
-            const queryParams = new URLSearchParams({
-                'entry.650268919': preferredComment,
-                'entry.812987669': 'YES',
-                'entry.1520462176': reason
-            });
+            const params = new URLSearchParams();
+            params.append('entry.650268919', preferredComment);
+            params.append('entry.812987669', 'YES');
+            params.append('entry.1520462176', reason);
 
-            submitToGoogleForms(queryParams.toString());
+            submitToGoogleForms(params);
         }
 
         // Move to the next question
@@ -75,11 +73,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function submitToGoogleForms(queryParams) {
-        const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLScHj1FaA0RpWx18pVgQoUyHh7NQzhEE0DrNI2PO4PVPg2V21g/formResponse?${queryParams}`;
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', formUrl, true);
-        xhr.send();
+    function submitToGoogleForms(params) {
+        const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLScHj1FaA0RpWx18pVgQoUyHh7NQzhEE0DrNI2PO4PVPg2V21g/formResponse`;
+        fetch(formUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params.toString()
+        })
+        .then(() => {
+            console.log('Form submitted successfully');
+        })
+        .catch((error) => {
+            console.error('Error submitting form:', error);
+        });
     }
 
     loadQuestion();
